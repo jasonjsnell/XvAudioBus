@@ -8,12 +8,46 @@
 
 /* Begin PBXBuildFile section */
 		967929C91E7057EB00346565 /* XvAudioBus.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929C71E7057EB00346565 /* XvAudioBus.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929D21E70596500346565 /* libAudiobus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 967929D11E70596500346565 /* libAudiobus.a */; };
+		967929E11E70598000346565 /* ABAudiobusController.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929D41E70598000346565 /* ABAudiobusController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E21E70598000346565 /* ABAudioUnitFader.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929D51E70598000346565 /* ABAudioUnitFader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E31E70598000346565 /* ABButtonTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929D61E70598000346565 /* ABButtonTrigger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E41E70598000346565 /* ABCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929D71E70598000346565 /* ABCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E51E70598000346565 /* ABFilterPort.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929D81E70598000346565 /* ABFilterPort.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E61E70598000346565 /* ABLocalPort.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929D91E70598000346565 /* ABLocalPort.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E71E70598000346565 /* ABMultiStreamBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929DA1E70598000346565 /* ABMultiStreamBuffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E81E70598000346565 /* ABPeer.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929DB1E70598000346565 /* ABPeer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929E91E70598000346565 /* ABPort.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929DC1E70598000346565 /* ABPort.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929EA1E70598000346565 /* ABReceiverPort.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929DD1E70598000346565 /* ABReceiverPort.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929EB1E70598000346565 /* ABSenderPort.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929DE1E70598000346565 /* ABSenderPort.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929EC1E70598000346565 /* ABTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929DF1E70598000346565 /* ABTrigger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929ED1E70598000346565 /* Audiobus.h in Headers */ = {isa = PBXBuildFile; fileRef = 967929E01E70598000346565 /* Audiobus.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		967929EF1E705A6000346565 /* XvAudioBus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967929EE1E705A6000346565 /* XvAudioBus.swift */; };
+		967929F31E705B6600346565 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967929F21E705B6600346565 /* Utils.swift */; };
+		96792A091E70715300346565 /* XvAudioBusConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96792A081E70715300346565 /* XvAudioBusConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		967929C41E7057EB00346565 /* XvAudioBus.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = XvAudioBus.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		967929C71E7057EB00346565 /* XvAudioBus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XvAudioBus.h; sourceTree = "<group>"; };
 		967929C81E7057EB00346565 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		967929D11E70596500346565 /* libAudiobus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAudiobus.a; path = Private/libAudiobus.a; sourceTree = "<group>"; };
+		967929D41E70598000346565 /* ABAudiobusController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABAudiobusController.h; path = Private/ABAudiobusController.h; sourceTree = "<group>"; };
+		967929D51E70598000346565 /* ABAudioUnitFader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABAudioUnitFader.h; path = Private/ABAudioUnitFader.h; sourceTree = "<group>"; };
+		967929D61E70598000346565 /* ABButtonTrigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABButtonTrigger.h; path = Private/ABButtonTrigger.h; sourceTree = "<group>"; };
+		967929D71E70598000346565 /* ABCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCommon.h; path = Private/ABCommon.h; sourceTree = "<group>"; };
+		967929D81E70598000346565 /* ABFilterPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABFilterPort.h; path = Private/ABFilterPort.h; sourceTree = "<group>"; };
+		967929D91E70598000346565 /* ABLocalPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABLocalPort.h; path = Private/ABLocalPort.h; sourceTree = "<group>"; };
+		967929DA1E70598000346565 /* ABMultiStreamBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABMultiStreamBuffer.h; path = Private/ABMultiStreamBuffer.h; sourceTree = "<group>"; };
+		967929DB1E70598000346565 /* ABPeer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABPeer.h; path = Private/ABPeer.h; sourceTree = "<group>"; };
+		967929DC1E70598000346565 /* ABPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABPort.h; path = Private/ABPort.h; sourceTree = "<group>"; };
+		967929DD1E70598000346565 /* ABReceiverPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABReceiverPort.h; path = Private/ABReceiverPort.h; sourceTree = "<group>"; };
+		967929DE1E70598000346565 /* ABSenderPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABSenderPort.h; path = Private/ABSenderPort.h; sourceTree = "<group>"; };
+		967929DF1E70598000346565 /* ABTrigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABTrigger.h; path = Private/ABTrigger.h; sourceTree = "<group>"; };
+		967929E01E70598000346565 /* Audiobus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Audiobus.h; path = Private/Audiobus.h; sourceTree = "<group>"; };
+		967929EE1E705A6000346565 /* XvAudioBus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XvAudioBus.swift; path = Public/XvAudioBus.swift; sourceTree = "<group>"; };
+		967929F21E705B6600346565 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Utils.swift; path = Private/Utils.swift; sourceTree = "<group>"; };
+		96792A081E70715300346565 /* XvAudioBusConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XvAudioBusConstants.swift; path = Public/XvAudioBusConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				967929D21E70596500346565 /* libAudiobus.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,10 +81,59 @@
 		967929C61E7057EB00346565 /* XvAudioBus */ = {
 			isa = PBXGroup;
 			children = (
+				967929F01E705A6500346565 /* Public */,
+				967929D31E70596F00346565 /* Private */,
+				967929F11E705A6D00346565 /* Basics */,
+			);
+			path = XvAudioBus;
+			sourceTree = "<group>";
+		};
+		967929D31E70596F00346565 /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				967929F21E705B6600346565 /* Utils.swift */,
+				967929F41E705B7E00346565 /* Obj-C */,
+			);
+			name = Private;
+			sourceTree = "<group>";
+		};
+		967929F01E705A6500346565 /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				967929EE1E705A6000346565 /* XvAudioBus.swift */,
+				96792A081E70715300346565 /* XvAudioBusConstants.swift */,
+			);
+			name = Public;
+			sourceTree = "<group>";
+		};
+		967929F11E705A6D00346565 /* Basics */ = {
+			isa = PBXGroup;
+			children = (
 				967929C71E7057EB00346565 /* XvAudioBus.h */,
 				967929C81E7057EB00346565 /* Info.plist */,
 			);
-			path = XvAudioBus;
+			name = Basics;
+			sourceTree = "<group>";
+		};
+		967929F41E705B7E00346565 /* Obj-C */ = {
+			isa = PBXGroup;
+			children = (
+				967929D41E70598000346565 /* ABAudiobusController.h */,
+				967929D51E70598000346565 /* ABAudioUnitFader.h */,
+				967929D61E70598000346565 /* ABButtonTrigger.h */,
+				967929D71E70598000346565 /* ABCommon.h */,
+				967929D81E70598000346565 /* ABFilterPort.h */,
+				967929D91E70598000346565 /* ABLocalPort.h */,
+				967929DA1E70598000346565 /* ABMultiStreamBuffer.h */,
+				967929DB1E70598000346565 /* ABPeer.h */,
+				967929DC1E70598000346565 /* ABPort.h */,
+				967929DD1E70598000346565 /* ABReceiverPort.h */,
+				967929DE1E70598000346565 /* ABSenderPort.h */,
+				967929DF1E70598000346565 /* ABTrigger.h */,
+				967929E01E70598000346565 /* Audiobus.h */,
+				967929D11E70596500346565 /* libAudiobus.a */,
+			);
+			name = "Obj-C";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,7 +143,20 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				967929E81E70598000346565 /* ABPeer.h in Headers */,
+				967929EB1E70598000346565 /* ABSenderPort.h in Headers */,
+				967929E51E70598000346565 /* ABFilterPort.h in Headers */,
 				967929C91E7057EB00346565 /* XvAudioBus.h in Headers */,
+				967929ED1E70598000346565 /* Audiobus.h in Headers */,
+				967929E61E70598000346565 /* ABLocalPort.h in Headers */,
+				967929E11E70598000346565 /* ABAudiobusController.h in Headers */,
+				967929E31E70598000346565 /* ABButtonTrigger.h in Headers */,
+				967929EC1E70598000346565 /* ABTrigger.h in Headers */,
+				967929EA1E70598000346565 /* ABReceiverPort.h in Headers */,
+				967929E41E70598000346565 /* ABCommon.h in Headers */,
+				967929E21E70598000346565 /* ABAudioUnitFader.h in Headers */,
+				967929E91E70598000346565 /* ABPort.h in Headers */,
+				967929E71E70598000346565 /* ABMultiStreamBuffer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +193,7 @@
 					967929C31E7057EB00346565 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = LN2HJCURK9;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -132,6 +230,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96792A091E70715300346565 /* XvAudioBusConstants.swift in Sources */,
+				967929EF1E705A6000346565 /* XvAudioBus.swift in Sources */,
+				967929F31E705B6600346565 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,6 +341,7 @@
 		967929CD1E7057EB00346565 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = LN2HJCURK9;
@@ -248,10 +350,16 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = XvAudioBus/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/XvAudioBus/Private",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonjsnell.XvAudioBus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -259,6 +367,7 @@
 		967929CE1E7057EB00346565 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = LN2HJCURK9;
@@ -267,7 +376,12 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = XvAudioBus/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/XvAudioBus/Private",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jasonjsnell.XvAudioBus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -294,6 +408,7 @@
 				967929CE1E7057EB00346565 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
