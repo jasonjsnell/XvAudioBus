@@ -45,9 +45,9 @@
 		967929DE1E70598000346565 /* ABSenderPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABSenderPort.h; path = Private/ABSenderPort.h; sourceTree = "<group>"; };
 		967929DF1E70598000346565 /* ABTrigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABTrigger.h; path = Private/ABTrigger.h; sourceTree = "<group>"; };
 		967929E01E70598000346565 /* Audiobus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Audiobus.h; path = Private/Audiobus.h; sourceTree = "<group>"; };
-		967929EE1E705A6000346565 /* XvAudioBus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XvAudioBus.swift; path = Public/XvAudioBus.swift; sourceTree = "<group>"; };
+		967929EE1E705A6000346565 /* XvAudioBus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XvAudioBus.swift; path = XvAudioBus/Public/XvAudioBus.swift; sourceTree = "<group>"; };
 		967929F21E705B6600346565 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Utils.swift; path = Private/Utils.swift; sourceTree = "<group>"; };
-		96792A081E70715300346565 /* XvAudioBusConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XvAudioBusConstants.swift; path = Public/XvAudioBusConstants.swift; sourceTree = "<group>"; };
+		96792A081E70715300346565 /* XvAudioBusConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XvAudioBusConstants.swift; path = XvAudioBus/Public/XvAudioBusConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +65,9 @@
 		967929BA1E7057EB00346565 = {
 			isa = PBXGroup;
 			children = (
-				967929C61E7057EB00346565 /* XvAudioBus */,
+				967929EE1E705A6000346565 /* XvAudioBus.swift */,
+				96792A081E70715300346565 /* XvAudioBusConstants.swift */,
+				967929D31E70596F00346565 /* Private */,
 				967929C51E7057EB00346565 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,32 +80,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		967929C61E7057EB00346565 /* XvAudioBus */ = {
-			isa = PBXGroup;
-			children = (
-				967929F01E705A6500346565 /* Public */,
-				967929D31E70596F00346565 /* Private */,
-				967929F11E705A6D00346565 /* Basics */,
-			);
-			path = XvAudioBus;
-			sourceTree = "<group>";
-		};
 		967929D31E70596F00346565 /* Private */ = {
 			isa = PBXGroup;
 			children = (
 				967929F21E705B6600346565 /* Utils.swift */,
+				967929F11E705A6D00346565 /* Basics */,
 				967929F41E705B7E00346565 /* Obj-C */,
 			);
 			name = Private;
-			sourceTree = "<group>";
-		};
-		967929F01E705A6500346565 /* Public */ = {
-			isa = PBXGroup;
-			children = (
-				967929EE1E705A6000346565 /* XvAudioBus.swift */,
-				96792A081E70715300346565 /* XvAudioBusConstants.swift */,
-			);
-			name = Public;
+			path = XvAudioBus;
 			sourceTree = "<group>";
 		};
 		967929F11E705A6D00346565 /* Basics */ = {
