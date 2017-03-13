@@ -68,7 +68,6 @@
 				967929EE1E705A6000346565 /* XvAudioBus.swift */,
 				96792A081E70715300346565 /* XvAudioBusConstants.swift */,
 				967929D31E70596F00346565 /* Private */,
-				967929C51E7057EB00346565 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,6 +77,7 @@
 				967929C41E7057EB00346565 /* XvAudioBus.framework */,
 			);
 			name = Products;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		967929D31E70596F00346565 /* Private */ = {
@@ -86,6 +86,7 @@
 				967929F21E705B6600346565 /* Utils.swift */,
 				967929F11E705A6D00346565 /* Basics */,
 				967929F41E705B7E00346565 /* Obj-C */,
+				967929C51E7057EB00346565 /* Products */,
 			);
 			name = Private;
 			path = XvAudioBus;
