@@ -161,7 +161,7 @@ public class XvAudioBus {
  
         */
         
-        return false // temp TODO delete
+        return false 
         
     }
     
