@@ -24,18 +24,25 @@ class Utils {
             userInfo: userInfo)
     }
     
-    class func getAudiobusDescription() -> AudioComponentDescription {
+    class func getAudiobusDescription(withSubtype: String) -> AudioComponentDescription? {
         
-        let kRefraktionsSubType_MainPort:OSType = fourCharCodeFrom(string: "rfmn")
-        let kAudioUnitManufacturer_JasonJSnell:OSType = fourCharCodeFrom(string: "jjsn")
-        
-        return AudioComponentDescription(
-            componentType: kAudioUnitType_RemoteGenerator,
-            componentSubType: kRefraktionsSubType_MainPort,
-            componentManufacturer: kAudioUnitManufacturer_JasonJSnell,
-            componentFlags: 0,
-            componentFlagsMask: 0)
-        
+        if (withSubtype.characters.count == 4){
+            
+            let kSubType:OSType = fourCharCodeFrom(string: withSubtype)
+            let kAudioUnitManufacturer_JasonJSnell:OSType = fourCharCodeFrom(string: "jjsn")
+            
+            return AudioComponentDescription(
+                componentType: kAudioUnitType_RemoteGenerator,
+                componentSubType: kSubType,
+                componentManufacturer: kAudioUnitManufacturer_JasonJSnell,
+                componentFlags: 0,
+                componentFlagsMask: 0)
+            
+        } else {
+            
+            print("AUDIOBUS UTILS: Error: Incoming subtype string is not the required 4 characters long")
+            return nil
+        }
     }
     
     //MARK: CHAR CONVERSION

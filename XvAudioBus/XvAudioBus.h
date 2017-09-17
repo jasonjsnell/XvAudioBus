@@ -29,5 +29,3 @@ FOUNDATION_EXPORT const unsigned char XvAudioBusVersionString[];
 #import <XvAudioBus/ABSenderPort.h>
 #import <XvAudioBus/ABTrigger.h>
 #import <XvAudioBus/Audiobus.h>
-
-
