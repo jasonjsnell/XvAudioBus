@@ -15,6 +15,7 @@ public class XvAudioBus {
     fileprivate var _audiobusController:ABAudiobusController? = nil
     fileprivate var remoteIoUnit:AudioUnit? = nil
     fileprivate var _midiSendPort:ABMIDISenderPort?
+    fileprivate var _midiReceivePort:ABMIDIReceiverPort?
     
     
     fileprivate let debug:Bool = true
@@ -112,7 +113,46 @@ public class XvAudioBus {
             }
             
         } else {
-            print("AUDIOBUS: Error: _audiobusController is nil during addMidiPort")
+            print("AUDIOBUS: Error: _audiobusController is nil during initMidiSendPort")
+        }
+        
+    }
+    
+    public func initMidiReceivePort(name:String, title:String){
+        
+        _midiReceivePort = ABMIDIReceiverPort(
+            name: name,
+            title: title,
+            receiverBlock: {
+                (receiverPort:ABPort,
+                packetList: UnsafePointer<MIDIPacketList>) in
+                
+                Utils.postNotification(
+                    name: XvAudioBusConstants.kXvAudioBusMidiPacketListReceived,
+                    userInfo: ["packetList" : packetList]
+                )
+                
+        })
+        
+        if (_audiobusController != nil){
+            
+            _audiobusController!.addMIDIReceiverPort(_midiReceivePort)
+            
+            //mandatory
+            //I'm using my bypass variable on ABConnected / ABDisconnected instead
+            _audiobusController?.enableReceivingCoreMIDIBlock = {
+                (receivingEnabled: Bool) -> Void in
+                
+                if (receivingEnabled){
+                    print("AUDIOBUS: Receiving is now enabled")
+                    
+                } else {
+                    print("AUDIOBUS: Receiving is now disabled")
+                }
+            }
+            
+        } else {
+            print("AUDIOBUS: Error: _audiobusController is nil during initMidiReceivePort")
         }
         
     }
