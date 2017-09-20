@@ -1423,17 +1423,17 @@ You're Done!        {#Youre-Done}
  @code
  _audiobusController.enableReceivingCoreMIDIBlock = ^(BOOL receivingEnabled) {
      if ( receivingEnabled ) {
-         // TODO: Core MIDI RECEIVING needs to be enabled
+         // Core MIDI RECEIVING needs to be enabled
      } else {
-         // TODO: Core MIDI RECEIVING needs to be disabled
+         // Core MIDI RECEIVING needs to be disabled
      }
  };
  
  _audiobusController.enableSendingCoreMIDIBlock = ^(BOOL sendingEnabled) {
      if ( sendingEnabled ) {
-         // TODO: Core MIDI SENDING needs to be enabled
+         // Core MIDI SENDING needs to be enabled
      } else {
-         // TODO: Core MIDI SENDING needs to be disabled
+         // Core MIDI SENDING needs to be disabled
      }
  };
  @endcode
