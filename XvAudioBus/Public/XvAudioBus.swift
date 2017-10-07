@@ -18,7 +18,7 @@ public class XvAudioBus {
     fileprivate var _midiReceivePort:ABMIDIReceiverPort?
     
     
-    fileprivate let debug:Bool = true
+    fileprivate let debug:Bool = false
     
     //singleton code
     public static let sharedInstance = XvAudioBus()
