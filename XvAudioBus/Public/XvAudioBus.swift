@@ -38,7 +38,6 @@ public class XvAudioBus {
             if (debug) { print("AUDIOBUS: Init") }
             
             _audiobusController = ABAudiobusController(apiKey: withAppKey)
-            print("_audiobusController", _audiobusController!)
             
             //location of notifcation panel
             _audiobusController?.connectionPanelPosition = ABConnectionPanelPositionRight
