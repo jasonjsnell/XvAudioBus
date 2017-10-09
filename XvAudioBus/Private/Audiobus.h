@@ -1000,9 +1000,9 @@ General Design Principles                                  {#General-Principles}
  @code
     _audiobusController.showInterAppAudioTransportPanelBlock = ^(BOOL showIAAPanel) {
         if ( showIAAPanel ) {
-           // TODO: Show Inter-App Audio Transport Panel
+           // Show Inter-App Audio Transport Panel
         } else {
-           // TODO: Hide Inter-App Audio Transport Panel
+           // Hide Inter-App Audio Transport Panel
         }
     };
  @endcode
@@ -1229,7 +1229,7 @@ You're Done!        {#Youre-Done}
                                        title:@"Transpose"
                                receiverBlock:^(__unsafe_unretained ABPort * filterPort,
                                                const MIDIPacketList * packetList) {
-       // TODO:
+ 
        // 1. Copy the packet list,
        // 2. Change events in the copied packet list
        // 3. Send the copied and changed packet list again using 
@@ -1278,7 +1278,7 @@ You're Done!        {#Youre-Done}
                                          title:@"MIDIReceive"
                                 receiverBlock:^(__unsafe_unretained ABPort * receiverPort,
                                                 const MIDIPacketList * packetList) {
-        // TODO: Process the received MIDI here
+        // Process the received MIDI here
     }];
  @endcode
  

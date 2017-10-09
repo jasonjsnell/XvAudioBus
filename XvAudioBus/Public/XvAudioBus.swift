@@ -263,7 +263,7 @@ public class XvAudioBus {
         //var isConnectedToIAASize:UInt32 = UInt32(MemoryLayout.size(ofValue: isConnectedToIAA))
         
         /*
-         TODO: move to audiobus wrapper and pass in instance
+         TODO: Next version: move to audiobus wrapper and pass in instance
         if let remoteIoUnit:AudioUnit = XvAudioSystem.sharedInstance.getRemoteIOAudioUnit() {
             
             let result:OSStatus = AudioUnitGetProperty(
