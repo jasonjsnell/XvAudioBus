@@ -157,11 +157,11 @@ public class XvAudioBus {
     }
     
     //MARK: UTILS
-    
+    //called by midi system > midi helper > audiobus
     public func midiSend(packetList: UnsafeMutablePointer<MIDIPacketList>){
         
         if (_midiSendPort != nil){
-            
+        
             ABMIDIPortSendPacketList(_midiSendPort!, packetList)
             
         } else {
