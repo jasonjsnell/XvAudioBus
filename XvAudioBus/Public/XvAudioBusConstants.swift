@@ -13,6 +13,9 @@ public class XvAudioBusConstants {
     public static let kXvAudioBusConnected:String = "kXvAudioBusConnected"
     public static let kXvAudioBusDisconnected:String = "kXvAudioBusDisconnected"
     
+    public static let kXvAudioBusPlayButtonPressed:String = "kXvAudioBusPlayButtonPressed"
+    public static let kXvAudioBusPauseButtonPressed:String = "kXvAudioBusPauseButtonPressed"
+    
     public static let kXvAudioBusMidiPacketListReceived:String = "kXvAudioBusMidiPacketListReceived"
     
     public static let kXvAudioBusFadeOutComplete:String = "kXvAudioBusFadeOutComplete"

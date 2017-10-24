@@ -13,12 +13,12 @@ public class XvAudioBus {
     //MARK: VARS -
 
     fileprivate var _audiobusController:ABAudiobusController? = nil
-    fileprivate var remoteIoUnit:AudioUnit? = nil
     fileprivate var _midiSendPort:ABMIDISenderPort?
     fileprivate var _midiReceivePort:ABMIDIReceiverPort?
+    fileprivate var _playToggleTrigger:ABTrigger?
     
     
-    fileprivate let debug:Bool = false
+    fileprivate let debug:Bool = true
     
     //singleton code
     public static let sharedInstance = XvAudioBus()
@@ -28,6 +28,7 @@ public class XvAudioBus {
     //MARK: - PUBLIC API - 
     //MARK: SETUP
     
+    //called by app delegate app launch  > AB helper
     public func setup(withAppKey:String) {
         
         //only init once
@@ -42,12 +43,17 @@ public class XvAudioBus {
             //location of notifcation panel
             _audiobusController?.connectionPanelPosition = ABConnectionPanelPositionRight
             
+            //play / pause toggle button on AB control panel
+            _playToggleTrigger = ABTrigger(systemType: ABTriggerTypePlayToggle, block: _playToggleBlock)
+            _audiobusController?.add(_playToggleTrigger!)
+            
         }
     }
     
+    
+    
+    //called by app delegate app launch  > AB helper
     public func addAudioPort(name:String, title:String, subtype:String, remoteIoUnit:AudioUnit) {
-        
-        self.remoteIoUnit = remoteIoUnit
         
         if let desc:AudioComponentDescription = Utils.getAudiobusDescription(withSubtype: subtype) {
             
@@ -71,7 +77,7 @@ public class XvAudioBus {
                     }
                     
                     //not currently used
-                    startObservingConnections()
+                    _startObservingConnections()
                     
                 } else {
                     print("AUDIOBUS: Error: _audiobusController is nil during addAudioPort")
@@ -89,7 +95,7 @@ public class XvAudioBus {
         
     }
     
-    
+    //called by app delegate app launch > AB helper
     public func initMidiSendPort(name:String, title:String){
         
         _midiSendPort = ABMIDISenderPort(name: name, title: title)
@@ -156,7 +162,30 @@ public class XvAudioBus {
         
     }
     
-    //MARK: UTILS
+    //MARK: UI UPDATES
+    public func updatePlaybackTriggerStateToNormal(){
+        
+        if (_playToggleTrigger != nil){
+            
+            _playToggleTrigger!.state = ABTriggerStateNormal
+            
+        } else {
+            print("AUDIOBUS: Error: _playToggleTrigger is nil during updatePlaybackTriggerStateToNormal")
+        }
+    }
+    
+    public func updatePlaybackTriggerStateToSelected(){
+        
+        if (_playToggleTrigger != nil){
+            
+            _playToggleTrigger!.state = ABTriggerStateSelected
+            
+        } else {
+            print("AUDIOBUS: Error: _playToggleTrigger is nil during updatePlaybackTriggerStateToSelected")
+        }
+    }
+    
+    //MARK: MIDI
     //called by midi system > midi helper > audiobus
     public func midiSend(packetList: UnsafeMutablePointer<MIDIPacketList>){
         
@@ -170,6 +199,7 @@ public class XvAudioBus {
         }
     }
     
+    //MARK: SHUTDOWN
     //called by helper when shuttind down system
     public func fadeOut(remoteIoUnit:AudioUnit){
         
@@ -197,7 +227,7 @@ public class XvAudioBus {
     
     //MARK: - PRIVATE API -
     //MARK: LISTENERS
-    private func startObservingConnections() {
+    fileprivate func _startObservingConnections() {
         
         //detects when audiobus starts or stops a connection
         //use this to notifiy the midi system to turn on / off its bypass
@@ -231,7 +261,7 @@ public class XvAudioBus {
         })
     }
     
-    private func stopObservingConnections() {
+    fileprivate func _stopObservingConnections() {
         
         NotificationCenter.default.removeObserver(
             self,
@@ -292,8 +322,48 @@ public class XvAudioBus {
         
     }
     
+    fileprivate func _playToggleBlock(trigger:Optional<ABTrigger>, ports:Optional<Set<AnyHashable>>) -> () {
+        
+        //is trigger valid
+        if (trigger != nil){
+            
+            //if state is normal (paused, showing a play button)
+            if (trigger!.state == ABTriggerStateNormal) {
+                
+                //then change back to normal
+                trigger!.state = ABTriggerStateSelected
+                
+                Utils.postNotification(
+                    name: XvAudioBusConstants.kXvAudioBusPlayButtonPressed,
+                    userInfo: nil
+                )
+                
+            } else if (trigger!.state == ABTriggerStateSelected){
+                
+                //else if state is selected (playing, showing a pause button)
+                //then change back to normal
+                
+                trigger!.state = ABTriggerStateNormal
+                
+                Utils.postNotification(
+                    name: XvAudioBusConstants.kXvAudioBusPauseButtonPressed,
+                    userInfo: nil
+                )
+                
+            } else {
+                
+                print("AUDIOBUS: Error: trigger state is unknown")
+            }
+            
+        } else {
+            print("AUDIOBUS: Error, trigger is nil on playToggleBlock")
+        }
+        
+        
+    }
+    
     deinit {
-        stopObservingConnections()
+        _stopObservingConnections()
         _audiobusController = nil
         _midiSendPort = nil
     }
