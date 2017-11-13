@@ -31,7 +31,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Accelerate/Accelerate.h>
 
-#define ABSDKVersionString @"3.0.2"
+#define ABSDKVersionString @"3.0.3"
 
 /*!
 @mainpage
@@ -99,7 +99,7 @@ Capabilities: Audio Sending, Filtering and Receiving
 
  **Audio senders** transmit audio to other apps (audio receivers or filters). A sender will typically send the
  audio that it's currently playing out of the device's audio output device. For
- example, a musical instrument app will send the sounds or the notes the user is currently playing.
+ example, a musical track app will send the sounds or the notes the user is currently playing.
  
  **Audio filters** accept audio input, process it, then send it onwards to another app over Audiobus. This
  allows applications to apply effects to the audio stream. Audio filters also behave as inputs or receivers,
@@ -254,14 +254,13 @@ General Design Principles                                  {#General-Principles}
  The easiest way to add Audiobus to your project is using [CocoaPods](https://cocoapods.org):
  
  1. If you don't have a Podfile at the top level of your project, create a file called "Podfile".
- 2. Open your Podfile and add the following code:
+ 2. Open your Podfile and add the following code, replacing `testTarget` with the name of your target:
  @code
  target 'testTarget' do
    pod 'Audiobus'
  end
  @endcode
- 3. In the code above: Replace <code>testTarget</code> by the name of your target.
- 4. Then, in the terminal and in the same folder, type:
+ 3. In the terminal and in the same folder, type:
    @code
     pod install
    @endcode
@@ -655,7 +654,7 @@ General Design Principles                                  {#General-Principles}
  5. Create five different new rows, by pressing Enter to create a new row and editing its properties:
     - "manufacturer" (of type String): set this to any four-letter code that identifies you (like "abus")
     - "type" (of type String): set this to "aurg", which means that we are identifying a "Remote Generator" audio unit,
-      or "auri" for a "Remote Instrument" unit which can [receive MIDI](@ref Create-MIDI-Receiver-Port).
+      or "auri" for a "Remote Track" unit which can [receive MIDI](@ref Create-MIDI-Receiver-Port).
     - "subtype" (of type String): set this to any four-letter code that identifies the port.
     - "name" (of type String): Apple recommend that you set this to "Manufacturer: App name" (see [WWDC 2013 session 602,
       page 37](https://devstreaming.apple.com/videos/wwdc/2013/602xcx2xk6ipx0cusjryu1sx5eu/602/602.pdf?dl=1)). If you
@@ -676,15 +675,15 @@ General Design Principles                                  {#General-Principles}
  but this is not a guarantee of uniqueness among non-Audiobus apps.
  </blockquote>
  
- If you intend to [work with MIDI](@ref Create-MIDI-Receiver-Port), you may wish to specify the Remote Instrument ('auri') type
+ If you intend to [work with MIDI](@ref Create-MIDI-Receiver-Port), you may wish to specify the Remote Track ('auri') type
  for your audio component.  See [Working With MIDI](@ref Working-With-MIDI) for more information. 
  
  <blockquote class="alert">
- If you create a port of Remote Instrument ('auri') you need to make sure that your port is not receiving twice, one time via Inter-App audio and a second time via Core MIDI. To ensure that you must assign a block to the [enableReceivingCoreMIDIBlock](@ref ABAudiobusController::enableReceivingCoreMIDIBlock) property. Audiobus calls this block to tell your app exactly when to enable or disable receiving via Core MIDI. See [here](@ref Disable-Core-MIDI) for more details.
+ If you create a port of Remote Track ('auri') you need to make sure that your port is not receiving twice, one time via Inter-App audio and a second time via Core MIDI. To ensure that you must assign a block to the [enableReceivingCoreMIDIBlock](@ref ABAudiobusController::enableReceivingCoreMIDIBlock) property. Audiobus calls this block to tell your app exactly when to enable or disable receiving via Core MIDI. See [here](@ref Disable-Core-MIDI) for more details.
  </blockquote>
  
  If you wish to use more than one AudioComponentDescription to publish the port, to provide both Remote Generator and
- Remote Instrument types for example, you may provide the additional AudioComponentDescription to the sender port via
+ Remote Track types for example, you may provide the additional AudioComponentDescription to the sender port via
  @link ABAudioSenderPort::registerAdditionalAudioComponentDescription: ABAudioSenderPort's registerAdditionalAudioComponentDescription: @endlink
  method (you will need to call AudioOutputUnitPublish for the additional types yourself).
  
@@ -758,7 +757,7 @@ General Design Principles                                  {#General-Principles}
  [receiving MIDI](@ref Create-MIDI-Receiver-Port).
  
  <blockquote class="alert">
- If you create a port of Remote Instrument ('aurm') you need to make sure that your port is not receiving twice, one time via Inter-App audio and a second time via Core MIDI. To ensure that you must assign a block to the [enableReceivingCoreMIDIBlock](@ref ABAudiobusController::enableReceivingCoreMIDIBlock) property. Audiobus calls this block to tell your app exactly when to enable or disable receiving via Core MIDI. See [here](@ref Disable-Core-MIDI) for more details.
+ If you create a port of Remote Track ('aurm') you need to make sure that your port is not receiving twice, one time via Inter-App audio and a second time via Core MIDI. To ensure that you must assign a block to the [enableReceivingCoreMIDIBlock](@ref ABAudiobusController::enableReceivingCoreMIDIBlock) property. Audiobus calls this block to tell your app exactly when to enable or disable receiving via Core MIDI. See [here](@ref Disable-Core-MIDI) for more details.
  </blockquote>
 
  <blockquote class="alert">
@@ -957,7 +956,7 @@ General Design Principles                                  {#General-Principles}
  
  If you intend to work with MIDI in your app, you may wish to create some MIDI sender, filter or receiver ports as well. See [Working With MIDI](@ref Working-With-MIDI) for more information.
  
- Note that if you only wish to respond to MIDI messages to generate audio, then you do not need to create a [MIDI receiver port](@ref Create-MIDI-Receiver-Port): you just need to specify a type of Remote Instrument ('auri') when creating an ABAudioSenderPort, and respond to MIDI messages via Inter-App Audio's [kAudioOutputUnitProperty_MIDICallbacks](https://developer.apple.com/library/content/samplecode/InterAppAudioSuite/Listings/InterAppAudioSampler_InterAppAudioSampler_Sampler_mm.html) mechanism. Audiobus will do the rest.
+ Note that if you only wish to respond to MIDI messages to generate audio, then you do not need to create a [MIDI receiver port](@ref Create-MIDI-Receiver-Port): you just need to specify a type of Remote Track ('auri') when creating an ABAudioSenderPort, and respond to MIDI messages via Inter-App Audio's [kAudioOutputUnitProperty_MIDICallbacks](https://developer.apple.com/library/content/samplecode/InterAppAudioSuite/Listings/InterAppAudioSampler_InterAppAudioSampler_Sampler_mm.html) mechanism. Audiobus will do the rest.
  
  
  Update the Audiobus Registry                                {#Update-Registry}
@@ -1000,9 +999,9 @@ General Design Principles                                  {#General-Principles}
  @code
     _audiobusController.showInterAppAudioTransportPanelBlock = ^(BOOL showIAAPanel) {
         if ( showIAAPanel ) {
-           // Show Inter-App Audio Transport Panel
+           // TODO: Show Inter-App Audio Transport Panel
         } else {
-           // Hide Inter-App Audio Transport Panel
+           // TODO: Hide Inter-App Audio Transport Panel
         }
     };
  @endcode
@@ -1025,7 +1024,7 @@ General Design Principles                                  {#General-Principles}
  
  @code
  - (void) refreshAUList {
-    [_publishedInstruments removeAllObjects];
+    [_publishedTracks removeAllObjects];
     
     AudioComponentDescription searchDesc = { 0, 0, 0, 0, 0 };
     AudioComponent comp = NULL;
@@ -1041,14 +1040,14 @@ General Design Principles                                  {#General-Principles}
         if(ABIsHiddenAudiobusPort(desc)) continue;
         
         //Fill list of other Inter-App audio nodes
-        if (desc.componentType == kAudioUnitType_RemoteInstrument ||
+        if (desc.componentType == kAudioUnitType_RemoteTrack ||
             desc.componentType == kAudioUnitType_RemoteGenerator ) {
             RemoteAU *rau = [[RemoteAU alloc] init];
             rau->_desc = desc;
             rau->_comp = comp;
             rau->_image = [AudioComponentGetIcon(comp, 32) retain];
             AudioComponentCopyName(comp, (CFStringRef *)&rau->_name);
-            [_publishedInstruments addObject: rau];
+            [_publishedTracks addObject: rau];
         }
     }
   }
@@ -1229,7 +1228,7 @@ You're Done!        {#Youre-Done}
                                        title:@"Transpose"
                                receiverBlock:^(__unsafe_unretained ABPort * filterPort,
                                                const MIDIPacketList * packetList) {
- 
+       // TODO:
        // 1. Copy the packet list,
        // 2. Change events in the copied packet list
        // 3. Send the copied and changed packet list again using 
@@ -1260,7 +1259,7 @@ You're Done!        {#Youre-Done}
  Apps that have MIDI receiver ports appear in the "Outputs" slots of the Audiobus
  MIDI page.
  
- > If your app is already an Inter-App Audio instrument (your sender port has type '`auri`') or an 
+ > If your app is already an Inter-App Audio track (your sender port has type '`auri`') or an 
  > Inter-App Audio music effect (your filter port has type '`aurm`'), you don't need to implement 
  > a MIDI receiver port. Audiobus will show your app in the "Outputs" slot and provide your app with MIDI
  > via Inter-App Audio.
@@ -1278,7 +1277,7 @@ You're Done!        {#Youre-Done}
                                          title:@"MIDIReceive"
                                 receiverBlock:^(__unsafe_unretained ABPort * receiverPort,
                                                 const MIDIPacketList * packetList) {
-        // Process the received MIDI here
+        // TODO: Process the received MIDI here
     }];
  @endcode
  
@@ -1423,17 +1422,17 @@ You're Done!        {#Youre-Done}
  @code
  _audiobusController.enableReceivingCoreMIDIBlock = ^(BOOL receivingEnabled) {
      if ( receivingEnabled ) {
-         // Core MIDI RECEIVING needs to be enabled
+         // TODO: Core MIDI RECEIVING needs to be enabled
      } else {
-         // Core MIDI RECEIVING needs to be disabled
+         // TODO: Core MIDI RECEIVING needs to be disabled
      }
  };
  
  _audiobusController.enableSendingCoreMIDIBlock = ^(BOOL sendingEnabled) {
      if ( sendingEnabled ) {
-         // Core MIDI SENDING needs to be enabled
+         // TODO: Core MIDI SENDING needs to be enabled
      } else {
-         // Core MIDI SENDING needs to be disabled
+         // TODO: Core MIDI SENDING needs to be disabled
      }
  };
  @endcode
@@ -1503,7 +1502,7 @@ You're Done!        {#Youre-Done}
  ------------------------------------------
  
  This section applies to you if your app sends MIDI (via ABMIDISenderPort), and also receives MIDI (either via
- ABMIDIReceiverPort or via Inter-App Audio via ABAudioSenderPort with a "Remote Instrument" 
+ ABMIDIReceiverPort or via Inter-App Audio via ABAudioSenderPort with a "Remote Track" 
  'auri' type).  A synth app that also behaves as a MIDI controller falls into this category, for example.
  
  Audiobus allows users to create connection pipelines where MIDI events generated
@@ -1575,12 +1574,12 @@ You're Done!        {#Youre-Done}
  to AB MIDI Filter. From there the events are sent to Animoog. In this scenario, AB Sender is a 
  pure MIDI controller, and must not generate any of its own audio.
  
- To allow your app to mute when appropriate, ABMIDISenderPort provides a property called
- [muted](@ref ABMIDISenderPort::muted). When the value of this property is YES, your app should
+ To allow your app to mute when appropriate, ABAudioSenderPort provides a property called
+ [muted](@ref ABAudioSenderPort::muted). When the value of this property is YES, your app should
  avoid producing any audio output. When NO, your app should behave as usual.
  
  To respond to changes to the `muted` property, observe the property of your
- ABMIDISenderPort instance and respond appropriately when changes occur:
+ ABAudioSenderPort instance and respond appropriately when changes occur:
  
  @code
  void *kSenderPortMutedChanged = &kSenderPortMutedChanged;
@@ -1625,38 +1624,33 @@ You're Done!        {#Youre-Done}
  
  Don't use MIDI channels                               {#Dont-use-MIDI-channels}
  -----------------------
- Generally Audiobus itself doesn't touch MIDI channels. MIDI channels are passed forward
- whithout any change. Filter apps of course can change MIDI channels. Although 
- Audiobus is not changing MIDI channels we beg you not to make use of MIDI channels:
  
- <ul>
- <li>If possible, let your app only send on MIDI channel 0.</li>
- <li>Do not evaluate MIDI channels. It should make no difference for
-   your app if a message has MIDI channel 1, 2 or whatever.</li>
- <li>If your app for example is a multitimbral synth and needs therefore receive on multiple
-   MIDI channels: Create separate instances of ABMIDIReceiverPort
-   for each timbre you want to use. SoundPrism for example creates one MIDI port
-   for the bass sound, one for the chord sound and one for the melody sound.
- <li>If your app for example is a complex MIDI controller, please create an instance
-   of ABMIDISenderPort for each MIDI channel you want to use. Fugue Machine for example
-   creates one instance of ABMIDISenderPort for each playhead.
- </ul>
+ Audiobus-compatible apps should not use the MIDI Channel information contained
+ within MIDI packets. As Audiobus uses ports (instances of `ABMIDIReceiverPort`, `ABMIDIFilterPort` and `ABMIDISenderPort`)
+ for routing of MIDI, the MIDI Channel data is not required and using it can cause unexpected behaviour.
  
- By doing so Audiobus is able to explitictly visualize MIDI channels to the user.
- Users can select the right MIDI "channel" within Audiobus and route it to the desired target.
- So following our MIDI channels policity you are supporting an important 
- usability concept of Audiobus.
+ - If possible, let your app only send on MIDI channel 0.
+ - Do not evaluate MIDI channels. It should make no difference for your app if a message has MIDI channel 1, 2, etc.
+ - If your app is a multitimbral synth and must therefore receive on multiple
+   MIDI channels, create separate instances of `ABMIDIReceiverPort` for each timbre you want to use. The app SoundPrism
+   creates one MIDI port for the bass sound, one for the chord sound and one for the melody sound, for example.
+ - If your app is a complex MIDI controller, please create an instance
+   of `ABMIDISenderPort` for each MIDI channel you want to use. The app Fugue Machine creates one instance of 
+   `ABMIDISenderPort` for each playhead, for example.
+ 
+ By using Audiobus MIDI ports instead of MIDI Channel information, your app allows Audiobus to correctly display
+ MIDI sources and destinations to the user.
+ 
  
  Don't show private MIDI ports                     {#Dont-use-private-MIDI-ports}
  -----------------------------
- Audiobus uses so called Private Virtual Core MIDI Sources and Destinations to 
- route MIDI from app to app. Normally private MIDI ports should never appear 
- within other apps. But unfortunately there is a bug in iOS making these
- ports shown from time to time.
  
- To prevent your app's Core MIDI sources and destinations list from showing tons
- of Audiobus MIDI ports, please check if a port is private before displaying it 
- to the user. Use this code to find out if a MIDI endpoint is private or not:
+ Audiobus uses private Virtual Core MIDI Sources and Destinations to route MIDI from app to app. Normally, private
+ MIDI ports should never appear within other apps. Unfortunately there is currently a bug in iOS making these
+ ports visible from time to time.
+ 
+ To prevent your app's Core MIDI sources and destinations list from showing tons of Audiobus MIDI ports, please check
+ if a port is private before displaying it to the user. Use this code to find out if a MIDI endpoint is private or not:
  
  @code
  BOOL isPrivateMIDIEndpoint(MIDIEndpointRef endpoint){
@@ -1671,27 +1665,23 @@ You're Done!        {#Youre-Done}
 }
  @endcode
  
- Ideally you are doing the check some milliseconds after a port has been appeared.
+ Ideally, you should perform this check some milliseconds after a port has been appeared, to allow the owning app to
+ set this flag on the other end.
 
  
  Developer Mode and Automatic App Termination  {#Dev-mode-and-automatic-app-termination}
  --------------------------------------------
- There is a bug in iOS which breaks receiving Core MIDI when an app is relaunched 
- in background. To workaround this bug we have added an SDK command which allows
- us to terminate and restart your app while it is in background. We only use 
- this possibility if the mentioned bug really happens. Currently only apps having
- one ore more ports of type ABMIDIReceiverPort and ABMIDIFilterPort are affected by this bug.
  
- So if your app provides one of these ports you might want to observe [ABApplicationWillTerminateNotification](@ref ABApplicationWillTerminateNotification).
- This notification will be sent out shortly before Audiobus will terminate and
- relaunch your app. 
+ There is currently a bug in iOS which breaks receiving from Core MIDI when an app is relaunched
+ into the background. To work around this bug we have added a mechanism within the Audiobus SDK that allows
+ us to terminate and restart your app while it is in background. We only use this system if the aforementioned bug
+ is observed. Currently only apps having one or more ports of type `ABMIDIReceiverPort` and `ABMIDIFilterPort` are 
+ affected by this bug.
  
- While debugging your app it can be very annoying if Audiobus is terminating your app.
- To disable the automatic background termination, simply enable "Developer Mode" 
- in the preferences of the Audiobus App.
-
+ If your app provides one of these ports you might want to observe [ABApplicationWillTerminateNotification](@ref ABApplicationWillTerminateNotification).
+ This notification will be sent out shortly before Audiobus will terminate and relaunch your app.
  
- 
+ To disable this functionality during debugging, enable "Developer Mode" in the preferences of the Audiobus App.
  
 
 @page Migration-Guide 2.x-3.x Migration Guide
@@ -1780,14 +1770,14 @@ You're Done!        {#Youre-Done}
  @ref Show-and-hide-Inter-App-Audio-Transport-Panel "Show and hide Inter-App Audio Transport Panel" 
  in the audio integration guide for more info.
  
- 6. Hosts, do not show Audiobus' hidden sender ports  {#Migration-Guide-Dont-show-hidden-sender-ports}
+ 6. Inter-App Audio Hosts: Do not show Audiobus' hidden sender ports  {#Migration-Guide-Dont-show-hidden-sender-ports}
  ==================================================
 
  Audiobus provides a number of hidden intermediate sender ports. These ports are
- only used internally by the Audiobus SDK. If your app is an Host you should
- hide these ports in the list of available Inter-App audio nodes. For more 
- information read the chapter
- @ref Dont-show-Audiobus-hidden-sender-ports "Hosts, do not show Audiobus' hidden sender ports"
+ only used internally by the Audiobus SDK. If your app is an Inter-App Audio host you should
+ hide these ports in the list of available Inter-App Audio nodes. For more
+ information read the section entitled
+ @ref Dont-show-Audiobus-hidden-sender-ports "If your app is an IAA host, do not show Audiobus' hidden sender ports"
  in the audio integration guide.
  
  7. Hosts, Audiobus 2 and Audiobus 3 behave differently {#Migration-Guide-AB2-and-AB3-behave-differently}

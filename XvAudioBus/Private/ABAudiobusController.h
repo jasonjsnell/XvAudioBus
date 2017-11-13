@@ -745,13 +745,17 @@ extern NSString * const ABPeerKey;
  *  and output positions simultaneously, allowing the app's output to be piped back into
  *  its input.
  *
- *  If you wish to support this functionality, you must pass NULL for the audioUnit parameter
- *  of ABAudioSenderPort's initialiser, which will cause the port to create its own separate
- *  audio unit for the connection, and explicitly use
-*   @link ABAudioSenderPort::ABAudioSenderPortSend ABAudioSenderPortSend @endlink to send audio.
+ *  If you wish to support this functionality, you must either (a) pass NULL for the audioUnit
+ *  parameter of ABAudioSenderPort's initialiser, which will cause the port to create its own
+ *  separate audio unit for the connection, and explicitly use
+ *  @link ABAudioSenderPort::ABAudioSenderPortSend ABAudioSenderPortSend @endlink to send audio,
+ *  or (b) ensure the audioUnit parameter is distinct from your app's main audio unit (the one
+ *  from which you call ABAudioReceiverPortReceive.
+ *
  *  If you do not do this, your app's audio system will stop running once a connection to self
- *  is established. Note that this requirement has been newly introduced with Audiobus 3, for
- *  technical reasons. See the AB Receiver sample app for a demonstration of this functionality.
+ *  is established, due to a loop in the audio unit connections. Note that this requirement has
+ *  been newly introduced with Audiobus 3, for technical reasons. See the AB Receiver sample app
+ *  for a demonstration of this functionality.
  *
  *  By default, this is disabled, as some apps may not function properly if their
  *  audio pipeline is traversed multiple times in the same time step.
@@ -838,7 +842,7 @@ extern NSString * const ABPeerKey;
  * Whether the MIDI port is connected to Audiobus.
  *
  *  When your app provides at least one MIDI port this property reflects
- *  wether this port is connected to some other inter app audio instrument. 
+ *  wether this port is connected to some other inter app audio track. 
  *
  */
 @property (nonatomic, readonly) BOOL audiobusMIDIPortConnected;

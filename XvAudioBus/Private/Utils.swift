@@ -26,7 +26,7 @@ class Utils {
     
     class func getAudiobusDescription(withSubtype: String) -> AudioComponentDescription? {
         
-        if (withSubtype.characters.count == 4){
+        if (withSubtype.count == 4){
             
             let kSubType:OSType = fourCharCodeFrom(string: withSubtype)
             let kAudioUnitManufacturer_JasonJSnell:OSType = fourCharCodeFrom(string: "jjsn")
@@ -47,7 +47,7 @@ class Utils {
     
     //MARK: CHAR CONVERSION
     class func fourCharCodeFrom(string : String) -> FourCharCode {
-        assert(string.characters.count == 4, "String length must be 4")
+        assert(string.count == 4, "String length must be 4")
         var result : FourCharCode = 0
         for char in string.utf16 {
             result = (result << 8) + FourCharCode(char)
