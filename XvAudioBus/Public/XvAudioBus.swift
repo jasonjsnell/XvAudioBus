@@ -13,7 +13,7 @@ public class XvAudioBus {
     //MARK: VARS -
 
     fileprivate var _audiobusController:ABAudiobusController? = nil
-    fileprivate var _midiSendPort:ABMIDISenderPort?
+    fileprivate var _midiSendPorts:[ABMIDISenderPort] = []
     fileprivate var _midiReceivePort:ABMIDIReceiverPort?
     fileprivate var _playToggleTrigger:ABTrigger?
     
@@ -95,72 +95,7 @@ public class XvAudioBus {
         
     }
     
-    //called by app delegate app launch > AB helper
-    public func initMidiSendPort(name:String, title:String){
-        
-        _midiSendPort = ABMIDISenderPort(name: name, title: title)
-        
-        if (_audiobusController != nil){
-            
-            _audiobusController!.addMIDISenderPort(_midiSendPort)
-            
-            //mandatory
-            //I'm using my bypass variable on ABConnected / ABDisconnected instead
-            _audiobusController?.enableSendingCoreMIDIBlock = {
-                (sendingEnabled: Bool) -> Void in
-                
-                if (sendingEnabled){
-                    print("AUDIOBUS: Sending is now enabled")
-                
-                } else {
-                    print("AUDIOBUS: Sending is now disabled")
-                }
-            }
-            
-        } else {
-            print("AUDIOBUS: Error: _audiobusController is nil during initMidiSendPort")
-        }
-        
-    }
-    
-    public func initMidiReceivePort(name:String, title:String){
-        
-        _midiReceivePort = ABMIDIReceiverPort(
-            name: name,
-            title: title,
-            receiverBlock: {
-                (receiverPort:ABPort,
-                packetList: UnsafePointer<MIDIPacketList>) in
-                
-                Utils.postNotification(
-                    name: XvAudioBusConstants.kXvAudioBusMidiPacketListReceived,
-                    userInfo: ["packetList" : packetList]
-                )
-                
-        })
-        
-        if (_audiobusController != nil){
-            
-            _audiobusController!.addMIDIReceiverPort(_midiReceivePort)
-            
-            //mandatory
-            //I'm using my bypass variable on ABConnected / ABDisconnected instead
-            _audiobusController?.enableReceivingCoreMIDIBlock = {
-                (receivingEnabled: Bool) -> Void in
-                
-                if (receivingEnabled){
-                    print("AUDIOBUS: Receiving is now enabled")
-                    
-                } else {
-                    print("AUDIOBUS: Receiving is now disabled")
-                }
-            }
-            
-        } else {
-            print("AUDIOBUS: Error: _audiobusController is nil during initMidiReceivePort")
-        }
-        
-    }
+   
     
     //MARK: UI UPDATES
     public func updatePlaybackTriggerStateToNormal(){
@@ -186,17 +121,135 @@ public class XvAudioBus {
     }
     
     //MARK: MIDI
-    //called by midi system > midi helper > audiobus
-    public func midiSend(packetList: UnsafeMutablePointer<MIDIPacketList>){
+    
+    //called by app delegate app launch > AB helper
+    public func addMidiSendPort(name:String, title:String) -> Bool{
         
-        if (_midiSendPort != nil){
+        if (_audiobusController != nil){
+            
+            if let midiSendPort:ABMIDISenderPort = ABMIDISenderPort(name: name, title: title) {
+                
+                _midiSendPorts.append(midiSendPort)
+                _audiobusController!.addMIDISenderPort(midiSendPort)
+                return true
+                
+            } else {
+                
+                print("AUDIOBUS: Unable to create ABMIDISenderPort during addMidiSendPort")
+                return false
+            }
+            
+        } else {
+            print("AUDIOBUS: Error: _audiobusController is nil during initMidiSendPort")
+            return false
+        }
         
-            ABMIDIPortSendPacketList(_midiSendPort!, packetList)
+    }
+    
+    public func addMidiSendListener(){
+        
+        //mandatory
+        //I'm using my bypass variable on ABConnected / ABDisconnected instead
+        _audiobusController?.enableSendingCoreMIDIBlock = {
+            (sendingEnabled: Bool) -> Void in
+            
+            if (sendingEnabled){
+                print("AUDIOBUS: Sending is now enabled")
+                
+            } else {
+                print("AUDIOBUS: Sending is now disabled")
+            }
+        }
+    }
+    
+    public func addMidiReceivePort(name:String, title:String) -> Bool{
+        
+        if (_audiobusController != nil){
+            
+            _midiReceivePort = ABMIDIReceiverPort(
+                name: name,
+                title: title,
+                receiverBlock: {
+                    (receiverPort:ABPort,
+                    packetList: UnsafePointer<MIDIPacketList>) in
+                    
+                    Utils.postNotification(
+                        name: XvAudioBusConstants.kXvAudioBusMidiPacketListReceived,
+                        userInfo: ["packetList" : packetList]
+                    )
+                    
+            })
+            
+            _audiobusController!.addMIDIReceiverPort(_midiReceivePort)
+            
+            return true
             
         } else {
             
-            print("AUDIOBUS: Error: midiSendPort is nil during midiSend")
+            print("AUDIOBUS: Error: _audiobusController is nil during initMidiReceivePort")
+            return false
         }
+        
+    }
+    
+    public func addMidiReceiveListener(){
+        
+        //mandatory
+        //I'm using my bypass variable on ABConnected / ABDisconnected instead
+        _audiobusController?.enableReceivingCoreMIDIBlock = {
+            (receivingEnabled: Bool) -> Void in
+            
+            if (receivingEnabled){
+                print("AUDIOBUS: Receiving is now enabled")
+                
+            } else {
+                print("AUDIOBUS: Receiving is now disabled")
+            }
+        }
+        
+    }
+    
+    //called by midi system > midi helper > audiobus
+    public func midiSend(packetList: UnsafeMutablePointer<MIDIPacketList>, toPort:Int){
+        
+        if (debug){
+            print("AUDIOBUS: Send midi packet to port", toPort)
+        }
+        
+        //TODO: if audio bus is on, shut down send / receive channels in settings
+        
+        //if port is -1, it refers to a system message, sent it to all ports
+        //(used in system messages like start / stop)
+        if (toPort == -1){
+            
+            for midiSendPort:ABMIDISenderPort in _midiSendPorts {
+                
+                //send packet into this port
+                ABMIDIPortSendPacketList(midiSendPort, packetList)
+            }
+            
+        } else {
+            
+            //always send to omni port (position 0)
+            let omniMidiSendPort:ABMIDISenderPort = _midiSendPorts[0]
+            ABMIDIPortSendPacketList(omniMidiSendPort, packetList)
+            
+            //then try to send to individual channel as well
+            
+            //check to see if port exists in array
+            if (toPort < _midiSendPorts.count){
+                
+                //if so, send packet to this port
+                let midiSendPort:ABMIDISenderPort = _midiSendPorts[(toPort + 1)] //add one since the 0 position is omni
+                ABMIDIPortSendPacketList(midiSendPort, packetList)
+                
+            } else {
+                
+                print("AUDIOBUS: Error: Incoming port is beyond the range of the ports array during midiSend")
+            }
+            
+       }
+        
     }
     
     //MARK: SHUTDOWN
@@ -365,7 +418,7 @@ public class XvAudioBus {
     deinit {
         _stopObservingConnections()
         _audiobusController = nil
-        _midiSendPort = nil
+        _midiSendPorts = []
     }
     
 }
