@@ -12,10 +12,37 @@ public class XvAudioBus {
     
     //MARK: VARS -
 
+    //controller
     fileprivate var _audiobusController:ABAudiobusController? = nil
+    
+    //ports
+    fileprivate var _audioSendPort:ABAudioSenderPort?
     fileprivate var _midiSendPorts:[ABMIDISenderPort] = []
-    fileprivate var _midiReceivePort:ABMIDIReceiverPort?
+    fileprivate var _midiFilterPorts:[ABMIDIFilterPort] = []
+    
     fileprivate var _playToggleTrigger:ABTrigger?
+    
+    fileprivate var _refreshStateDelayTimer:Timer?
+    
+    fileprivate var _midiSendPortEnabled:Bool = false
+    public var midiSendPortEnabled:Bool {
+        get { return _midiSendPortEnabled }
+        set {
+            _midiSendPortEnabled = newValue
+            
+            //send port overrides filter port, deactivating it
+            if (_midiSendPortEnabled) {
+                midiFilterPortEnabled = false
+            }
+            
+        }
+    }
+    
+    fileprivate var _midiFilterPortEnabled:Bool = false
+    public var midiFilterPortEnabled:Bool {
+        get { return _midiFilterPortEnabled }
+        set { _midiFilterPortEnabled = newValue }
+    }
     
     
     fileprivate let debug:Bool = true
@@ -57,23 +84,23 @@ public class XvAudioBus {
         
         if let desc:AudioComponentDescription = Utils.getAudiobusDescription(withSubtype: subtype) {
             
+            _audioSendPort = nil
+            
             //main sender port, out the remoteIO
-            if let audioPort:ABAudioSenderPort = ABAudioSenderPort(
+            _audioSendPort = ABAudioSenderPort(
                 name: name,
                 title: title,
                 audioComponentDescription: desc,
                 audioUnit: remoteIoUnit
                 )
-                
-            {
-                
+            
                 if (_audiobusController != nil){
                     
                     //then add sender port to controller
-                    _audiobusController!.addAudioSenderPort(audioPort)
+                    _audiobusController!.addAudioSenderPort(_audioSendPort)
                     
                     if (debug) {
-                        print("AUDIOBUS: Audio send port", audioPort)
+                        print("AUDIOBUS: Audio send port", _audioSendPort as Any)
                     }
                     
                     //not currently used
@@ -83,9 +110,7 @@ public class XvAudioBus {
                     print("AUDIOBUS: Error: _audiobusController is nil during addAudioPort")
                 }
                 
-            } else {
-                print("AUDIOBUS: Unable to init audio port with name", name)
-            }
+            
             
         } else {
             
@@ -120,7 +145,10 @@ public class XvAudioBus {
         }
     }
     
-    //MARK: MIDI
+    //MARK: - MIDI -
+    //MARK: Add ports
+    
+    //ABMIDIPortSendPacketList(_MIDISenderPort, packetList);
     
     //called by app delegate app launch > AB helper
     public func addMidiSendPort(name:String, title:String) -> Bool{
@@ -129,6 +157,7 @@ public class XvAudioBus {
             
             if let midiSendPort:ABMIDISenderPort = ABMIDISenderPort(name: name, title: title) {
                 
+                if (debug) { print("AUDIOBUS: Add", name, " | ", title) }
                 _midiSendPorts.append(midiSendPort)
                 _audiobusController!.addMIDISenderPort(midiSendPort)
                 return true
@@ -146,116 +175,126 @@ public class XvAudioBus {
         
     }
     
-    public func addMidiSendListener(){
-        
-        //mandatory
-        //I'm using my bypass variable on ABConnected / ABDisconnected instead
-        _audiobusController?.enableSendingCoreMIDIBlock = {
-            (sendingEnabled: Bool) -> Void in
-            
-            if (sendingEnabled){
-                print("AUDIOBUS: Sending is now enabled")
-                
-            } else {
-                print("AUDIOBUS: Sending is now disabled")
-            }
-        }
-    }
-    
-    public func addMidiReceivePort(name:String, title:String) -> Bool{
+   
+    public func addMidiFilterPort(name:String, title:String) -> Bool{
         
         if (_audiobusController != nil){
             
-            _midiReceivePort = ABMIDIReceiverPort(
+            if let midiFilterPort:ABMIDIFilterPort = ABMIDIFilterPort(
                 name: name,
                 title: title,
                 receiverBlock: {
                     (receiverPort:ABPort,
                     packetList: UnsafePointer<MIDIPacketList>) in
                     
-                    Utils.postNotification(
-                        name: XvAudioBusConstants.kXvAudioBusMidiPacketListReceived,
-                        userInfo: ["packetList" : packetList]
-                    )
+                    print("receiver port", receiverPort.name)
                     
-            })
-            
-            _audiobusController!.addMIDIReceiverPort(_midiReceivePort)
-            
-            return true
+                    let lastDigit:String = String(name.suffix(1))
+                    
+                    if let channel:Int = Int(lastDigit) {
+                        
+                        Utils.postNotification(
+                            name: XvAudioBusConstants.kXvAudioBusMidiPacketListReceived,
+                            userInfo: [
+                                "port" : receiverPort,
+                                "channel" : channel-1, //if port name is 1, then the corresponding midi channel is 0
+                                "packetList" : packetList
+                            ]
+                        )
+                        
+                    } else {
+                        print("AUDIOBUS: Error: Filter port not recognized")
+                    }
+                    
+            }) {
+                
+                if (debug) { print("AUDIOBUS: Add", name, " | ", title) }
+                _midiFilterPorts.append(midiFilterPort)
+                _audiobusController!.addMIDIFilterPort(midiFilterPort)
+                return true
+                
+            } else {
+                
+                print("AUDIOBUS: Unable to create ABMIDIFilterPort during addMidiFilterPort")
+                return false
+            }
+
             
         } else {
             
-            print("AUDIOBUS: Error: _audiobusController is nil during initMidiReceivePort")
+            print("AUDIOBUS: Error: _audiobusController is nil during initMidiFilterPort")
             return false
         }
         
     }
     
-    public func addMidiReceiveListener(){
-        
-        //mandatory
-        //I'm using my bypass variable on ABConnected / ABDisconnected instead
-        _audiobusController?.enableReceivingCoreMIDIBlock = {
-            (receivingEnabled: Bool) -> Void in
-            
-            if (receivingEnabled){
-                print("AUDIOBUS: Receiving is now enabled")
-                
-            } else {
-                print("AUDIOBUS: Receiving is now disabled")
-            }
-        }
-        
-    }
+    //MARK: Send to ports
     
-    //called by midi system > midi helper > audiobus
-    public func midiSend(packetList: UnsafeMutablePointer<MIDIPacketList>, toPort:Int){
+    public func getMIDISendPorts(forChannel:Int) -> [ABMIDIPort] {
         
-        if (debug){
-            print("AUDIOBUS: Send midi packet to port", toPort)
-        }
+        //returns an array because it always includes port 0, the omni port
+        var midiPorts:[ABMIDIPort] = []
         
-        //TODO: if audio bus is on, shut down send / receive channels in settings
-        
-        //if port is -1, it refers to a system message, sent it to all ports
-        //(used in system messages like start / stop)
-        if (toPort == -1){
+        if (forChannel == -1){
             
-            for midiSendPort:ABMIDISenderPort in _midiSendPorts {
-                
-                //send packet into this port
-                ABMIDIPortSendPacketList(midiSendPort, packetList)
-            }
+            midiPorts = _midiSendPorts
             
         } else {
             
             //always send to omni port (position 0)
-            let omniMidiSendPort:ABMIDISenderPort = _midiSendPorts[0]
-            ABMIDIPortSendPacketList(omniMidiSendPort, packetList)
-            
-            //then try to send to individual channel as well
+            midiPorts.append(_midiSendPorts[0])
             
             //check to see if port exists in array
-            if (toPort < _midiSendPorts.count){
+            if (forChannel < _midiSendPorts.count){
                 
-                //if so, send packet to this port
-                let midiSendPort:ABMIDISenderPort = _midiSendPorts[(toPort + 1)] //add one since the 0 position is omni
-                ABMIDIPortSendPacketList(midiSendPort, packetList)
+                //if so, append port to array
+                midiPorts.append(_midiSendPorts[(forChannel + 1)])
                 
             } else {
                 
-                print("AUDIOBUS: Error: Incoming port is beyond the range of the ports array during midiSend")
+                print("AUDIOBUS: Error: Incoming channel is beyond the range of the midiSendPorts array during getMIDISendPorts")
             }
+        }
+        
+        return midiPorts
+    }
+    
+    public func getMIDIFilterPort(forChannel:Int) -> ABMIDIPort? {
+        
+        //check to see if port exists in array
+        if (forChannel < _midiFilterPorts.count){
             
-       }
+            //if so, return port
+            return _midiFilterPorts[forChannel]
+            
+        } else {
+            
+            print("AUDIOBUS: Error: Incoming channel is beyond the range of the midiFilterPorts array during getMIDIFilterPort")
+            
+            return nil
+        }
         
     }
     
-    //MARK: SHUTDOWN
+    //called by midi system > midi helper > audiobus (MIDI send port)
+    
+    public func midiSend(packetList: UnsafeMutablePointer<MIDIPacketList>, toPorts:[ABMIDIPort]){
+        
+        for port:ABMIDIPort in toPorts {
+            
+            if (debug){
+                print("AUDIOBUS: Send midi packet to", port.name)
+            }
+            
+            ABMIDIPortSendPacketList(port, packetList)
+        }
+    }
+    
+    
+    
+    //MARK: - SHUTDOWN
     //called by helper when shuttind down system
     public func fadeOut(remoteIoUnit:AudioUnit){
-        
         
          ABAudioUnitFader.fadeOutAudioUnit(remoteIoUnit, completionBlock: {
             
@@ -267,7 +306,7 @@ public class XvAudioBus {
          })
     }
     
-    //MARK: ACCESSORS
+    //MARK: - ACCESSORS
     
     //called by delegate
     public func isAudioBusConnected() -> Bool {
@@ -278,8 +317,130 @@ public class XvAudioBus {
         }
     }
     
-    //MARK: - PRIVATE API -
-    //MARK: LISTENERS
+    //MARK: - REFRESH STATE
+    
+    internal func startRefreshStateDelayTimer(){
+        
+        _refreshStateDelayTimer?.invalidate()
+        
+        _refreshStateDelayTimer = Timer.scheduledTimer(
+            timeInterval: 1.0,
+            target: self,
+            selector: #selector(refreshState),
+            userInfo: nil,
+            repeats: false
+        )
+        
+    }
+    
+    @objc internal func refreshState(){
+        
+        _refreshStateDelayTimer?.invalidate()
+        
+        
+        //set filter first, since sender overrides it
+        //loop through filter ports, true if any are connected
+        midiFilterPortEnabled = false
+        
+        for midiFilterPort in _midiFilterPorts {
+            
+            if (midiFilterPort.connected){
+                midiFilterPortEnabled = true
+            }
+        }
+        
+        //loop through send ports, true if any are connected
+        midiSendPortEnabled = false
+        for midiSendPort in _midiSendPorts {
+            
+            if (midiSendPort.connected){
+                midiSendPortEnabled = true
+            }
+            
+            
+        }
+        
+        print("AUDIOBUS: Refresh: MIDI Send", midiSendPortEnabled, "| MIDI Filter", midiFilterPortEnabled)
+        
+        
+        
+        //TODO: needed?
+        
+        if (midiSendPortEnabled) {
+            
+            Utils.postNotification(
+                name: XvAudioBusConstants.kXvAudioBusMidiSendPortConnected,
+                userInfo: nil
+            )
+            
+        } else if (midiFilterPortEnabled){
+            
+            Utils.postNotification(
+                name: XvAudioBusConstants.kXvAudioBusMidiFilterPortConnected,
+                userInfo: nil
+            )
+            
+        } else {
+            
+            Utils.postNotification(
+                name: XvAudioBusConstants.kXvAudioBusMidiPortsDisconnected,
+                userInfo: nil
+            )
+        }
+        
+        
+    }
+    
+
+    //MARK: - LISTENERS
+    
+    public func addMidiSendListener(){
+        
+        //mandatory
+        //I'm using my bypass variable on ABConnected / ABDisconnected instead
+        _audiobusController?.enableSendingCoreMIDIBlock = {
+            (sendingEnabled: Bool) -> Void in
+            
+            //not used
+            /*
+             if (sendingEnabled){
+             //fires when app is removed as a MIDI Sender
+             print("AUDIOBUS: AB MIDI Sending is now off")
+             
+             } else {
+             //fires when app is selected as a Midi Sender
+             print("AUDIOBUS: AB MIDI Sending is now on")
+             
+             }
+             */
+            
+        }
+    }
+    
+    public func addMidiReceiveListener(){
+        
+        //mandatory
+        //I'm using my bypass variable on ABConnected / ABDisconnected instead
+        _audiobusController?.enableReceivingCoreMIDIBlock = {
+            (receivingEnabled: Bool) -> Void in
+            
+            if (receivingEnabled){
+                //fires when app is removed as a MIDI Sender
+                //fires when app is removed as a MIDI Filter
+                print("AUDIOBUS: AB MIDI Receiving is now off")
+                
+            } else {
+                //fires when app is selected as a MIDI Sender
+                //fires when app is selected as a MIDI Filter
+                print("AUDIOBUS: AB MIDI Receiving is now on")
+            }
+            
+            self.startRefreshStateDelayTimer()
+            
+        }
+        
+    }
+    
     fileprivate func _startObservingConnections() {
         
         //detects when audiobus starts or stops a connection
@@ -291,12 +452,19 @@ public class XvAudioBus {
             queue: nil,
             using: { _ in
                 
-                if (self.debug){ print("AUDIOBUS: Connected") }
+                //this fires when app is added, any port
+                //this does not fire when additional ports are added
+                if (self.debug){
+                    print("")
+                    print("AUDIOBUS: Connected")
+                }
                 
                 Utils.postNotification(
                     name: XvAudioBusConstants.kXvAudioBusConnected,
                     userInfo: nil
                 )
+                
+                
         })
         
         let _ = NotificationCenter.default.addObserver(
@@ -305,13 +473,19 @@ public class XvAudioBus {
             queue: nil,
             using: { _ in
                 
-                if (self.debug){ print("AUDIOBUS: Disconnected") }
+                //this fires when all ports are removed
+                //this does not fire when when an individual port is removed, unless it is the last port
+                if (self.debug){
+                    print("")
+                    print("AUDIOBUS: Disconnected")
+                }
                 
                 Utils.postNotification(
                     name: XvAudioBusConstants.kXvAudioBusDisconnected,
                     userInfo: nil
                 )
         })
+        
     }
     
     fileprivate func _stopObservingConnections() {
@@ -329,6 +503,10 @@ public class XvAudioBus {
         )
         
     }
+    
+    
+    
+    
     
     
     
@@ -419,6 +597,8 @@ public class XvAudioBus {
         _stopObservingConnections()
         _audiobusController = nil
         _midiSendPorts = []
+        _midiFilterPorts = []
     }
     
 }
+
