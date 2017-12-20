@@ -185,24 +185,8 @@ public class XvAudioBus {
                     (receiverPort:ABPort,
                     packetList: UnsafePointer<MIDIPacketList>) in
                     
-                    print("receiver port", receiverPort.name)
-                    
-                    let lastDigit:String = String(name.suffix(1))
-                    
-                    if let channel:UInt8 = UInt8(lastDigit) {
-                        
-                        Utils.postNotification(
-                            name: XvAudioBusConstants.kXvAudioBusMidiPacketListReceived,
-                            userInfo: [
-                                "port" : receiverPort,
-                                "channel" : channel-1, //if port name is 1, then the corresponding midi channel is 0
-                                "packetList" : packetList
-                            ]
-                        )
-                        
-                    } else {
-                        print("AUDIOBUS: Error: Filter port not recognized")
-                    }
+                    //pass to func to process filter port packetlists
+                    self.filterPortReceive(name: name, filterPort: receiverPort, packetList: packetList)
                     
             }) {
                 
@@ -226,7 +210,7 @@ public class XvAudioBus {
         
     }
     
-    //MARK: Send to ports
+    //MARK: Port accessors
     
     public func getAllMidiSendPorts() -> [ABMIDIPort] {
         
@@ -277,6 +261,7 @@ public class XvAudioBus {
         
     }
     
+    //MARK: Port send
     //called by midi system > midi helper > audiobus (MIDI send port)
     
     public func midiSend(packetList: UnsafeMutablePointer<MIDIPacketList>, toPorts:[ABMIDIPort]){
@@ -289,6 +274,99 @@ public class XvAudioBus {
             
             ABMIDIPortSendPacketList(port, packetList)
         }
+    }
+    
+    //MARK: Filter port
+    fileprivate func filterPortReceive(name:String, filterPort:ABPort, packetList: UnsafePointer<MIDIPacketList>) {
+        
+        if self.debug { print("AUDIOBUS: Filter port", filterPort.name) }
+        
+        //grab last character in string (example "JasonJSnell: Refraktions: MIDI Filter 3")
+        let lastDigit:String = String(name.suffix(1))
+        
+        //this digit is the port number
+        if let portNum:UInt8 = UInt8(lastDigit) {
+            
+            //convert port number to a midi channel (substract 1)
+            let midiChannel:UInt8 = portNum-1
+            
+            //repackage the MIDI packet so the MIDI channel reflects the port, rathern than the default of channel 0
+            let repackagedPacketList = Utils.repackage(
+                packetList: packetList,
+                withChannel: midiChannel
+            )
+            
+            //send out the incoming note immediately, like a MIDI thru
+            
+            if let midiPort:ABMIDIPort = filterPort as? ABMIDIPort {
+                
+                self.midiSend(packetList: repackagedPacketList, toPorts: [midiPort])
+                
+            } else {
+                
+                print("AUDIOBUS: Error converting filter port into midi port during filterPortReceive")
+            }
+            
+            //get note data from packet list
+            
+            if let noteData:[UInt8] = Utils.getNoteData(fromPacketList: repackagedPacketList) {
+                
+                let status:UInt8 = noteData[0]
+                let rawStatus:UInt8 = status & 0xF0 // without channel
+                let note:UInt8 = noteData[1]
+                let velocity:UInt8 = noteData[2]
+                
+                //post notications based on whether it is note on or note off
+                //if status is note on
+                if (rawStatus == XvAudioBusConstants.MIDI_NOTE_ON) {
+                    
+                    //if volume is above zero
+                    if (velocity > 0) {
+                        
+                        Utils.postNotification(
+                            name: XvAudioBusConstants.kXvAudioBusMidiFilterNoteOn,
+                            userInfo: [
+                                "channel" : midiChannel,
+                                "note" : note,
+                                "velocity" : velocity
+                            ]
+                        )
+                        
+                    } else {
+                        
+                        //else volume is zero, note off
+        
+                        Utils.postNotification(
+                            name: XvAudioBusConstants.kXvAudioBusMidiFilterNoteOff,
+                            userInfo: [
+                                "channel" : midiChannel,
+                                "note" : note
+                            ]
+                        )
+                    }
+                    
+                } else if (rawStatus == XvAudioBusConstants.MIDI_NOTE_OFF){
+                    
+                    //else status is note off
+                    Utils.postNotification(
+                        name: XvAudioBusConstants.kXvAudioBusMidiFilterNoteOff,
+                        userInfo: [
+                            "channel" : midiChannel,
+                            "note" : note
+                        ]
+                    )
+                }
+                
+                
+            } else {
+                
+                print("AUDIOBUS: Error getting noteData UInt8 array from packetList during filterPortReceive")
+            }
+            
+        } else {
+            print("AUDIOBUS: Error: Unable to convert port name into port number during filterPortReceive")
+        }
+        
     }
     
     
@@ -502,7 +580,7 @@ public class XvAudioBus {
     
     
     
-    //MARK: UTILS
+    //MARK: - UTILS
     
     
     fileprivate func getAudioBusController() -> ABAudiobusController? {
