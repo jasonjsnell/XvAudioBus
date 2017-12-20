@@ -22,8 +22,6 @@ public class XvAudioBus {
     
     fileprivate var _playToggleTrigger:ABTrigger?
     
-    fileprivate var _refreshStateDelayTimer:Timer?
-    
     fileprivate var _midiSendPortEnabled:Bool = false
     public var midiSendPortEnabled:Bool {
         get { return _midiSendPortEnabled }
@@ -191,7 +189,7 @@ public class XvAudioBus {
                     
                     let lastDigit:String = String(name.suffix(1))
                     
-                    if let channel:Int = Int(lastDigit) {
+                    if let channel:UInt8 = UInt8(lastDigit) {
                         
                         Utils.postNotification(
                             name: XvAudioBusConstants.kXvAudioBusMidiPacketListReceived,
@@ -230,42 +228,45 @@ public class XvAudioBus {
     
     //MARK: Send to ports
     
-    public func getMIDISendPorts(forChannel:Int) -> [ABMIDIPort] {
+    public func getAllMidiSendPorts() -> [ABMIDIPort] {
         
-        //returns an array because it always includes port 0, the omni port
-        var midiPorts:[ABMIDIPort] = []
+        return _midiSendPorts
+    }
+    
+    public func getMIDISendPorts(forChannel:UInt8) -> [ABMIDIPort]? {
         
-        if (forChannel == -1){
+        //confirm channel is within range of audiobus channels
+        //(need to block commands from midi channels numbered higher than the number of AB midi ports)
+        
+        let channel:Int = Int(forChannel)
+        if (channel < _midiSendPorts.count-1) {
             
-            midiPorts = _midiSendPorts
+            //returns an array because it always includes port 0, the omni port
+            var midiPorts:[ABMIDIPort] = [_midiSendPorts[0]]
+            
+            //and add on the port corresponding to the track (1-8 in RF)
+            midiPorts.append(_midiSendPorts[(channel + 1)])
+            
+            return midiPorts
             
         } else {
             
-            //always send to omni port (position 0)
-            midiPorts.append(_midiSendPorts[0])
-            
-            //check to see if port exists in array
-            if (forChannel < _midiSendPorts.count){
-                
-                //if so, append port to array
-                midiPorts.append(_midiSendPorts[(forChannel + 1)])
-                
-            } else {
-                
-                print("AUDIOBUS: Error: Incoming channel is beyond the range of the midiSendPorts array during getMIDISendPorts")
-            }
+             print("AUDIOBUS: Error: Incoming channel is beyond the range of the midiSendPorts array during getMIDISendPorts")
+            return nil
         }
         
-        return midiPorts
+        
     }
     
-    public func getMIDIFilterPort(forChannel:Int) -> ABMIDIPort? {
+    public func getMIDIFilterPort(forChannel:UInt8) -> ABMIDIPort? {
+        
+        let channel:Int = Int(forChannel)
         
         //check to see if port exists in array
-        if (forChannel < _midiFilterPorts.count){
+        if (channel < _midiFilterPorts.count){
             
             //if so, return port
-            return _midiFilterPorts[forChannel]
+            return _midiFilterPorts[channel]
             
         } else {
             
@@ -321,22 +322,13 @@ public class XvAudioBus {
     
     internal func startRefreshStateDelayTimer(){
         
-        _refreshStateDelayTimer?.invalidate()
-        
-        _refreshStateDelayTimer = Timer.scheduledTimer(
-            timeInterval: 1.0,
-            target: self,
-            selector: #selector(refreshState),
-            userInfo: nil,
-            repeats: false
-        )
-        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
+
+            self.refreshState()
+        }
     }
     
-    @objc internal func refreshState(){
-        
-        _refreshStateDelayTimer?.invalidate()
-        
+    internal func refreshState(){
         
         //set filter first, since sender overrides it
         //loop through filter ports, true if any are connected
