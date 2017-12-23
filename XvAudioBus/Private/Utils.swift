@@ -110,9 +110,6 @@ class Utils {
         //loop through packets. Sometimes a note on / off is in the same packet as timeclock
         for _ in 0 ..< inPacketList.numPackets {
             
-            //print packet
-            print("AB MIDI repackage")
-            
             //extract data
             let timeStamp:MIDITimeStamp = inPacket.timeStamp
             let status:UInt8 = inPacket.data.0
@@ -144,7 +141,7 @@ class Utils {
                     }
                     
                 } else if (rawStatus == XvAudioBusConstants.MIDI_NOTE_OFF){
-                    print("note off")
+                   
                     //note off
                     noteByte = getByte(fromStr: XvAudioBusConstants.MIDI_NOTE_OFF_PREFIX + midiChannelHex)
                     

@@ -430,12 +430,11 @@ public class XvAudioBus {
             
         }
         
-        print("AUDIOBUS: Refresh: MIDI Send", midiSendPortEnabled, "| MIDI Filter", midiFilterPortEnabled)
+        if (debug){
+            print("AUDIOBUS: Refresh: MIDI Send", midiSendPortEnabled, "| MIDI Filter", midiFilterPortEnabled)
+        }
         
-        
-        
-        //TODO: needed?
-        
+        /*
         if (midiSendPortEnabled) {
             
             Utils.postNotification(
@@ -457,7 +456,7 @@ public class XvAudioBus {
                 userInfo: nil
             )
         }
-        
+        */
         
     }
     
