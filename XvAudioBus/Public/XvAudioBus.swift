@@ -43,7 +43,7 @@ public class XvAudioBus {
     }
     
     
-    fileprivate let debug:Bool = true
+    fileprivate let debug:Bool = false
     
     //singleton code
     public static let sharedInstance = XvAudioBus()
