@@ -370,21 +370,6 @@ public class XvAudioBus {
     }
     
     
-    
-    //MARK: - SHUTDOWN
-    //called by helper when shuttind down system
-    public func fadeOut(remoteIoUnit:AudioUnit){
-        
-         ABAudioUnitFader.fadeOutAudioUnit(remoteIoUnit, completionBlock: {
-            
-            if (self.debug){ print("AUDIOBUS: Remote IO unit fadeout complete") }
-            
-            Utils.postNotification(
-                name: XvAudioBusConstants.kXvAudioBusFadeOutComplete,
-                userInfo: nil)
-         })
-    }
-    
     //MARK: - ACCESSORS
     
     //called by delegate
