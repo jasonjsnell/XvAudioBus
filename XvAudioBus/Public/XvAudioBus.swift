@@ -11,10 +11,13 @@ import Foundation
 public class XvAudioBus {
     
     //MARK: VARS -
+    
+    fileprivate let debug:Bool = false
 
     //controller
     fileprivate var _audiobusController:ABAudiobusController? = nil
     
+    fileprivate var _remoteIoUnit:AudioUnit?
     //ports
     fileprivate var _audioSendPort:ABAudioSenderPort?
     fileprivate var _midiSendPorts:[ABMIDISenderPort] = []
@@ -32,7 +35,6 @@ public class XvAudioBus {
             if (_midiSendPortEnabled) {
                 midiFilterPortEnabled = false
             }
-            
         }
     }
     
@@ -41,9 +43,7 @@ public class XvAudioBus {
         get { return _midiFilterPortEnabled }
         set { _midiFilterPortEnabled = newValue }
     }
-    
-    
-    fileprivate let debug:Bool = false
+
     
     //singleton code
     public static let sharedInstance = XvAudioBus()
@@ -76,9 +76,11 @@ public class XvAudioBus {
     }
     
     
-    
     //called by app delegate app launch  > AB helper
     public func addAudioPort(name:String, title:String, subtype:String, remoteIoUnit:AudioUnit) {
+        
+        //only called once (as of RF 2.2) so save this as the only remoteIoUnit
+        _remoteIoUnit = remoteIoUnit
         
         if let desc:AudioComponentDescription = Utils.getAudiobusDescription(withSubtype: subtype) {
             
@@ -571,18 +573,16 @@ public class XvAudioBus {
         return _audiobusController
     }
     
-    //not used currently
+    //checks to see if inter app audio is connected
     fileprivate func isConnectedToInterAppAudio() -> Bool {
         
-        //var isConnectedToIAA:Bool = false
-        //var isConnectedToIAASize:UInt32 = UInt32(MemoryLayout.size(ofValue: isConnectedToIAA))
+        var isConnectedToIAA:Bool = false
+        var isConnectedToIAASize:UInt32 = UInt32(MemoryLayout.size(ofValue: isConnectedToIAA))
         
-        /*
-         TODO: Future: move to audiobus wrapper and pass in instance
-        if let remoteIoUnit:AudioUnit = XvAudioSystem.sharedInstance.getRemoteIOAudioUnit() {
+        if (_remoteIoUnit != nil) {
             
             let result:OSStatus = AudioUnitGetProperty(
-                remoteIoUnit,
+                _remoteIoUnit!,
                 kAudioUnitProperty_IsInterAppConnected,
                 kAudioUnitScope_Global,
                 0,
@@ -591,19 +591,17 @@ public class XvAudioBus {
             )
             
             guard result == noErr else {
-                AudioUtils.print("AUDIO ENGINE: Error getting unit format", result)
+                print("AUDIOBUS: Error getting IsInterAppConnected from remoteIoUnit during isConnectedToInterAppAudio:", result)
                 return false
             }
             
             return isConnectedToIAA
             
         } else {
+            
+            print("AUDIOBUS: Error getting remoteIoUnit during isConnectedToInterAppAudio")
             return false
         }
- 
-        */
-        
-        return false 
         
     }
     
