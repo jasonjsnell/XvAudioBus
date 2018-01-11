@@ -12,7 +12,7 @@ public class XvAudioBus {
     
     //MARK: VARS -
     
-    fileprivate let debug:Bool = false
+    fileprivate let debug:Bool = true
 
     //controller
     fileprivate var _audiobusController:ABAudiobusController? = nil
@@ -109,8 +109,6 @@ public class XvAudioBus {
                 } else {
                     print("AUDIOBUS: Error: _audiobusController is nil during addAudioPort")
                 }
-                
-            
             
         } else {
             
@@ -148,8 +146,6 @@ public class XvAudioBus {
     //MARK: - MIDI -
     //MARK: Add ports
     
-    //ABMIDIPortSendPacketList(_MIDISenderPort, packetList);
-    
     //called by app delegate app launch > AB helper
     public func addMidiSendPort(name:String, title:String) -> Bool{
         
@@ -172,7 +168,6 @@ public class XvAudioBus {
             print("AUDIOBUS: Error: _audiobusController is nil during initMidiSendPort")
             return false
         }
-        
     }
     
    
@@ -202,14 +197,12 @@ public class XvAudioBus {
                 print("AUDIOBUS: Unable to create ABMIDIFilterPort during addMidiFilterPort")
                 return false
             }
-
             
         } else {
             
             print("AUDIOBUS: Error: _audiobusController is nil during initMidiFilterPort")
             return false
         }
-        
     }
     
     //MARK: Port accessors
@@ -240,8 +233,6 @@ public class XvAudioBus {
              print("AUDIOBUS: Error: Incoming channel is beyond the range of the midiSendPorts array during getMIDISendPorts")
             return nil
         }
-        
-        
     }
     
     public func getMIDIFilterPort(forChannel:UInt8) -> ABMIDIPort? {
@@ -387,6 +378,8 @@ public class XvAudioBus {
     
     internal func startRefreshStateDelayTimer(){
         
+        print("startRefreshStateDelayTimer")
+        
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
 
             self.refreshState()
@@ -421,18 +414,11 @@ public class XvAudioBus {
             print("AUDIOBUS: Refresh: MIDI Send", midiSendPortEnabled, "| MIDI Filter", midiFilterPortEnabled)
         }
         
-        /*
-        if (midiSendPortEnabled) {
+        
+        if (midiSendPortEnabled || midiFilterPortEnabled) {
             
             Utils.postNotification(
-                name: XvAudioBusConstants.kXvAudioBusMidiSendPortConnected,
-                userInfo: nil
-            )
-            
-        } else if (midiFilterPortEnabled){
-            
-            Utils.postNotification(
-                name: XvAudioBusConstants.kXvAudioBusMidiFilterPortConnected,
+                name: XvAudioBusConstants.kXvAudioBusMidiPortsConnected,
                 userInfo: nil
             )
             
@@ -443,7 +429,7 @@ public class XvAudioBus {
                 userInfo: nil
             )
         }
-        */
+        
         
     }
     
@@ -513,14 +499,15 @@ public class XvAudioBus {
                 if (self.debug){
                     print("")
                     print("AUDIOBUS: Connected")
+                    
                 }
+                
+                self.refreshState()
                 
                 Utils.postNotification(
                     name: XvAudioBusConstants.kXvAudioBusConnected,
                     userInfo: nil
                 )
-                
-                
         })
         
         let _ = NotificationCenter.default.addObserver(
