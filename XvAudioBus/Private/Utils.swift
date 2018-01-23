@@ -70,9 +70,6 @@ class Utils {
         //loop through packets. Sometimes a note on / off is in the same packet as timeclock
         for _ in 0 ..< packetList.numPackets {
             
-            //print packet
-            print("")
-            
             //extract data
             let status:UInt8 = packet.data.0
             let rawStatus:UInt8 = status & 0xF0 // without channel
@@ -130,12 +127,11 @@ class Utils {
                     
                     if (d2 == 0x0) {
                         
-                        print("note off")
                         //some midi controllers request a note off by putting the velocity to 0
                         noteByte = getByte(fromStr: XvAudioBusConstants.MIDI_NOTE_OFF_PREFIX + midiChannelHex)
                         
                     } else {
-                        print("note on")
+                      
                         //else normal note on
                         noteByte = getByte(fromStr: XvAudioBusConstants.MIDI_NOTE_ON_PREFIX + midiChannelHex)
                     }
