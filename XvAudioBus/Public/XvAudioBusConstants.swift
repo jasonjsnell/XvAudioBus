@@ -10,6 +10,8 @@ import Foundation
 
 public class XvAudioBusConstants {
     
+    public static let AUDIOBUS_DESTINATION:String = "Host"
+    
     //midi constants
     public static let MIDI_OMNI:String = "Omni"
     public static let MIDI_NOTE_ON_PREFIX:String = "9"

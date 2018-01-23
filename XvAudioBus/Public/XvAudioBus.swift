@@ -378,8 +378,6 @@ public class XvAudioBus {
     
     internal func startRefreshStateDelayTimer(){
         
-        print("startRefreshStateDelayTimer")
-        
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
 
             self.refreshState()
