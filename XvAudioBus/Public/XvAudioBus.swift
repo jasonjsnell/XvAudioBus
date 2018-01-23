@@ -12,7 +12,7 @@ public class XvAudioBus {
     
     //MARK: VARS -
     
-    fileprivate let debug:Bool = true
+    fileprivate let debug:Bool = false
 
     //controller
     fileprivate var _audiobusController:ABAudiobusController? = nil
