@@ -12,7 +12,7 @@ public class XvAudioBus {
     
     //MARK: VARS -
     
-    fileprivate let debug:Bool = false
+    fileprivate let debug:Bool = true
 
     //controller
     fileprivate var _audiobusController:ABAudiobusController? = nil
@@ -288,17 +288,6 @@ public class XvAudioBus {
                 packetList: packetList,
                 withChannel: midiChannel
             )
-            
-            //send out the incoming note immediately, like a MIDI thru
-            
-            if let midiPort:ABMIDIPort = filterPort as? ABMIDIPort {
-                
-                self.midiSend(packetList: repackagedPacketList, toPorts: [midiPort])
-                
-            } else {
-                
-                print("AUDIOBUS: Error converting filter port into midi port during filterPortReceive")
-            }
             
             //get note data from packet list
             
